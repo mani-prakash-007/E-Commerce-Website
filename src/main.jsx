@@ -41,7 +41,6 @@ const App = () => {
           </Route>
           <Route path="admin" element={<Admin />} />
           <Route path="orders" element={<Orders />} />
-          
         </Route>
 
         {/*Undefined Routes*/}
@@ -49,7 +48,7 @@ const App = () => {
       </Route>
     ),
     {
-      basename: "/E---Commerce-Website",
+      basename: "/E-Commerce-Website",
     }
   );
 
