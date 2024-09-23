@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PrivateRoute = () => {
-  //Getting Login Flag from session Storage
-  const isLoggedIn = sessionStorage.getItem("isLoggedin");
+  // Getting Login Flag from sessionStorage
+  const isLoggedIn = sessionStorage.getItem("isLoggedin") === "true";
+  console.log("Private Route : ", isLoggedIn);
 
-  //If not logedin , redirect to login page
-  return isLoggedIn ? <Outlet /> : <Navigate to={"/login"} />;
+  // If not logged in, redirect to the login page
+  return isLoggedIn ? <Outlet /> : <Navigate to="/login" />;
 };

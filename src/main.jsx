@@ -18,21 +18,21 @@ import { Admin } from "./Components/pages/Admin.jsx";
 import { Orders } from "./Components/pages/Orders.jsx";
 import { Login } from "./Components/pages/Login.jsx";
 import { PrivateRoute } from "./Components/Routes/PrivateRoute.jsx";
+import { useSelector } from "react-redux";
 
 const App = () => {
-  const isLoggedIn = sessionStorage.getItem("isLoggedin") == "true";
-  console.log(isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.loginDetails.isLoggedin);
 
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
         {/* Public Route - Index route */}
-        <Route index path="" element={isLoggedIn ? <Home /> : <Login />} />
+        <Route index element={!isLoggedIn ? <Login /> : <Home />} />
 
-        {/* Public route for redirecting while not authenticated */}
-        <Route index path="login" element={isLoggedIn ? <Home /> : <Login />} />
+        {/* Public Route for Login */}
+        <Route path="login" element={isLoggedIn ? <Home /> : <Login />} />
 
-        {/* Private Route  */}
+        {/* Private Routes */}
         <Route element={<PrivateRoute />}>
           <Route path="home" element={<Home />} />
           <Route path="product">
@@ -46,7 +46,7 @@ const App = () => {
           <Route path="orders" element={<Orders />} />
         </Route>
 
-        {/*Undefined Routes*/}
+        {/* Undefined Routes */}
         <Route path="*" element={<ErrorPage />} />
       </Route>
     ),

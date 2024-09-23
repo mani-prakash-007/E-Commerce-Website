@@ -12,7 +12,6 @@ export const Login = () => {
 
   //Redux Store
   const loginDetails = useSelector((state) => state.loginDetails);
-  console.log(loginDetails);
 
   //Dispatch
   const dispatch = useDispatch();
@@ -34,7 +33,7 @@ export const Login = () => {
 
       setTimeout(() => {
         dispatch(authenticate(false));
-      }, 300000);
+      }, 60000);
     } else {
       toast.error("Wrong Credentials...", {
         position: "top-right",
