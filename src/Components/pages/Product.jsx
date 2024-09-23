@@ -110,6 +110,7 @@ export const Product = () => {
     dispatch(confirmOrder(updatedOrderItem));
     toast.success("Order Placed Successfull", {
       position: "top-right",
+      autoClose: 1000,
     });
 
     // Close the dialog after placing the order

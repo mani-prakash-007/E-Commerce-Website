@@ -51,7 +51,7 @@ export const Orders = () => {
             <div className="flex flex-col justify-center items-center my-10">
               <h1 className="font-bold text-xl text-center my-5">No Orders</h1>
               <Link
-                to={"/login"}
+                to={"/home"}
                 className="px-5 border rounded-lg py-2 bg-blue-600 hover:bg-blue-500 text-white mx-2 w-32 text-center"
               >
                 <p className="font-medium text-xl">Home</p>

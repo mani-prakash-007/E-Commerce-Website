@@ -31,7 +31,10 @@ export const Cart = () => {
       } else if (change === -1 && newQuantity[index] > 1) {
         newQuantity[index]--;
       } else {
-        toast.error(change === 1 ? "Max Quantity is 5" : "Min Quantity is 1");
+        toast.error(change === 1 ? "Max Quantity is 5" : "Min Quantity is 1", {
+          position: "top-right",
+          autoClose: 1000,
+        });
       }
       return newQuantity;
     });
@@ -62,7 +65,10 @@ export const Cart = () => {
     });
 
     dispatch(clearCart()); // Clear the cart
-    toast.success("Orders Placed Successfully", { position: "top-right" });
+    toast.success("Orders Placed Successfully", {
+      position: "top-right",
+      autoClose: 1000,
+    });
   };
 
   return (
