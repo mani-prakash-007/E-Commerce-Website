@@ -1,9 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+//Session storage
+let initialLoginStatus;
+
+if (sessionStorage.getItem("isLoggedin") === "true") {
+  initialLoginStatus = sessionStorage.getItem("isLoggedin");
+} else {
+  initialLoginStatus = sessionStorage.setItem("isLoggedin", "false");
+}
+
 const initialState = {
   email: "manip8072@gmail.com",
   password: "Mani@2003",
-  isLoggedin: false,
+  isLoggedin: initialLoginStatus,
 };
 //Slice
 export const loginDetails = createSlice({

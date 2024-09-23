@@ -7,6 +7,9 @@ import { IoIosStar } from "react-icons/io";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addProductToCart } from "../../Redux/slice/cart";
+import { FaMinus, FaPlus } from "react-icons/fa6";
+import { confirmOrder } from "../../Redux/slice/orders";
+import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 
 export const Category = () => {
   //Params
@@ -15,6 +18,11 @@ export const Category = () => {
   //State
   const [categoryList, setCategoryList] = useState();
   const [productList, setProductList] = useState();
+  const [orderItem, setOrderItem] = useState({
+    product: "",
+    quantity: 1,
+    orderId: 0,
+  });
 
   //Dispatch
   const dispatch = useDispatch();
@@ -31,6 +39,10 @@ export const Category = () => {
 
   //Cart Products
   const cartProducts = useSelector((state) => state.cartProducts);
+
+  //Placed Orders
+  const placedOrders = useSelector((state) => state.orders);
+  console.log(placedOrders);
 
   //Side Effects
   useEffect(() => {
@@ -101,6 +113,50 @@ export const Category = () => {
     }
   };
 
+  //Function for Increment
+  const handleDecrement = () => {
+    if (orderItem.quantity > 1) {
+      setOrderItem((previousValue) => {
+        return {
+          ...previousValue,
+          quantity: previousValue.quantity - 1,
+        };
+      });
+    } else {
+      alert("Min Quantity is 1");
+    }
+  };
+
+  //Function for Increment
+  const handleIncrement = () => {
+    if (orderItem.quantity < 5) {
+      setOrderItem((previousValue) => {
+        return {
+          ...previousValue,
+          quantity: previousValue.quantity + 1,
+        };
+      });
+    } else {
+      alert("Max Quantity is 5");
+    }
+  };
+
+  //Function for place Order...
+  const handlePlaceOrder = (product) => {
+    const updatedOrderItem = {
+      ...orderItem,
+      product: product,
+      orderId: generateRandomNumber(),
+    };
+    dispatch(confirmOrder(updatedOrderItem));
+    toast.success("Order Placed Successfull", {
+      position: "top-right",
+    });
+
+    // Close the dialog after placing the order
+    document.getElementById("my_modal_4").close();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="border h-10 w-11/12 shadow-lg flex justify-center items-center">
@@ -120,6 +176,7 @@ export const Category = () => {
             );
           })}
       </div>
+      // Inside the return statement of your component
       {categoryProducts &&
         categoryProducts.map((product, index) => {
           return (
@@ -134,13 +191,13 @@ export const Category = () => {
                   className="w-48 h-60 p-2 mx-2"
                 />
               </Link>
-              <div className=" h-60 w-1/2 p-3 mx-2">
+              <div className="h-60 w-1/2 p-3 mx-2">
                 <h1 className="font-semibold text-xl">{product.title}</h1>
                 <p className="my-2 overflow-y-scroll no-scrollbar h-36">
                   {product.description}
                 </p>
               </div>
-              <div className=" w-1/4 px-7 py-4 h-60 mx-2">
+              <div className="w-1/4 px-7 py-4 h-60 mx-2">
                 <h1 className="font-bold text-4xl">${product.price}</h1>
                 <p className="font-semibold text-lg py-1 my-2">Ratings</p>
                 <div className="flex">
@@ -154,18 +211,78 @@ export const Category = () => {
                     ))}
                 </div>
                 <div className="flex flex-col my-5">
-                  <Link
-                    to={`/product/${product.id}`}
-                    className="border py-2 text-center my-1 rounded-md bg-orange-600 text-white font-bold active:scale-95"
-                  >
-                    Buy Now
-                  </Link>
                   <button
                     onClick={() => handleAddCart(product)}
                     className="border py-2 my-1 rounded-md bg-orange-400 text-white font-bold active:scale-95"
                   >
                     Add to Cart
                   </button>
+                  <button
+                    onClick={() => {
+                      setOrderItem((prev) => ({
+                        ...prev,
+                        product, // Set the selected product here
+                      }));
+                      document.getElementById("my_modal_4").showModal();
+                    }}
+                    className="border py-2 text-center my-1 rounded-md bg-orange-600 text-white font-bold active:scale-95"
+                  >
+                    Buy Now
+                  </button>
+                  <dialog id="my_modal_4" className="modal">
+                    <div className="modal-box w-11/12 max-w-5xl">
+                      <h3 className="font-bold text-lg">Order Confirmation</h3>
+                      <table className="table">
+                        <thead>
+                          <tr className="text-base">
+                            <th>Product Name</th>
+                            <th className="text-center">Quantity</th>
+                            <th>Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{orderItem.product.title}</td>{" "}
+                            {/* Use orderItem.product.title */}
+                            <td className="flex items-center justify-center">
+                              <button
+                                onClick={handleDecrement}
+                                className="border p-1 mx-3 rounded-md hover:bg-gray-300 active:scale-90"
+                              >
+                                <FaMinus />
+                              </button>
+                              {orderItem.quantity}
+                              <button
+                                onClick={handleIncrement}
+                                className="border p-1 mx-3 rounded-md hover:bg-gray-300 active:scale-90"
+                              >
+                                <FaPlus />
+                              </button>
+                            </td>
+                            <td>
+                              $
+                              {(
+                                orderItem.product.price * orderItem.quantity
+                              ).toFixed(2)}{" "}
+                              {/* Use orderItem.product.price */}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div className="modal-action">
+                        <form method="dialog">
+                          <button className="btn">Cancel Order</button>
+                          <button
+                            onClick={() => handlePlaceOrder(orderItem.product)} // Pass the selected product
+                            type="button"
+                            className="btn border px-7 py-3 mx-5 w-44 rounded-md bg-orange-600 text-white font-bold active:scale-95"
+                          >
+                            Place Order
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </dialog>
                 </div>
               </div>
             </div>

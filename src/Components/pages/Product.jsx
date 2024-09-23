@@ -6,7 +6,9 @@ import { IoIosStar } from "react-icons/io";
 import { addProductToCart } from "../../Redux/slice/cart";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaMinus, FaPlug, FaPlus } from "react-icons/fa6";
+import { FaMinus, FaPlus } from "react-icons/fa6";
+import { confirmOrder } from "../../Redux/slice/orders";
+import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 
 export const Product = () => {
   //Params
@@ -14,11 +16,14 @@ export const Product = () => {
 
   //State
   const [productList, setProductList] = useState();
-  const [productQuantity, setProductQuantity] = useState(1);
+  const [orderItem, setOrderItem] = useState({
+    product: "",
+    quantity: 1,
+    orderId: 0,
+  });
 
   //Dispatch
   const dispatch = useDispatch();
-
   //Redux Store Access
   //Allproducts
   const { allProducts, isLoading, error } = useSelector(
@@ -27,6 +32,10 @@ export const Product = () => {
 
   //Cart Products
   const cartProducts = useSelector((state) => state.cartProducts);
+
+  //Placed Orders
+  const placedOrders = useSelector((state) => state.orders);
+  console.log(placedOrders);
 
   //Side Effects
   useEffect(() => {
@@ -65,19 +74,46 @@ export const Product = () => {
 
   //Function for Increment
   const handleDecrement = () => {
-    if (productQuantity > 1) {
-      setProductQuantity(productQuantity - 1);
+    if (orderItem.quantity > 1) {
+      setOrderItem((previousValue) => {
+        return {
+          ...previousValue,
+          quantity: previousValue.quantity - 1,
+        };
+      });
     } else {
       alert("Min Quantity is 1");
     }
   };
+
   //Function for Increment
   const handleIncrement = () => {
-    if (productQuantity < 5) {
-      setProductQuantity(productQuantity + 1);
+    if (orderItem.quantity < 5) {
+      setOrderItem((previousValue) => {
+        return {
+          ...previousValue,
+          quantity: previousValue.quantity + 1,
+        };
+      });
     } else {
       alert("Max Quantity is 5");
     }
+  };
+
+  //Function for place Order...
+  const handlePlaceOrder = (product) => {
+    const updatedOrderItem = {
+      ...orderItem,
+      product: product,
+      orderId: generateRandomNumber(),
+    };
+    dispatch(confirmOrder(updatedOrderItem));
+    toast.success("Order Placed Successfull", {
+      position: "top-right",
+    });
+
+    // Close the dialog after placing the order
+    document.getElementById("my_modal_4").close();
   };
 
   return (
@@ -104,10 +140,6 @@ export const Product = () => {
                     >
                       ADD TO CART
                     </button>
-                    {/* <button className="border px-7 py-3 mx-5 w-44 rounded-md  bg-orange-600 text-white font-bold active:scale-95">
-                      BUY NOW
-                    </button> */}
-                    {/* You can open the modal using document.getElementById('ID').showModal() method */}
                     <button
                       className="btn border px-7 py-3 mx-5 w-44 rounded-md  bg-orange-600 text-white font-bold active:scale-95"
                       onClick={() =>
@@ -141,7 +173,7 @@ export const Product = () => {
                                 >
                                   <FaMinus />
                                 </button>
-                                {productQuantity}{" "}
+                                {orderItem.quantity}{" "}
                                 <button
                                   onClick={handleIncrement}
                                   className="border p-1 mx-3 rounded-md hover:bg-gray-300 active:scale-90"
@@ -150,19 +182,22 @@ export const Product = () => {
                                 </button>
                               </td>
                               <td>
-                                ${(product.price * productQuantity).toFixed(2)}
+                                $
+                                {(product.price * orderItem.quantity).toFixed(
+                                  2
+                                )}
                               </td>
                             </tr>
                           </tbody>
                         </table>
-
                         <div className="modal-action">
                           <form method="dialog">
                             {/* if there is a button, it will close the modal */}
                             <button className="btn">Cancel Order</button>
                             <button
+                              onClick={() => handlePlaceOrder(product)}
                               type="button"
-                              className="border px-7 py-3 mx-5 w-44 rounded-md  bg-orange-600 text-white font-bold active:scale-95"
+                              className="btn border px-7 py-3 mx-5 w-44 rounded-md  bg-orange-600 text-white font-bold active:scale-95"
                             >
                               Place Order
                             </button>

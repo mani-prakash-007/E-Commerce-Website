@@ -20,14 +20,17 @@ import { Login } from "./Components/pages/Login.jsx";
 import { PrivateRoute } from "./Components/Routes/PrivateRoute.jsx";
 
 const App = () => {
+  const isLoggedIn = sessionStorage.getItem("isLoggedin") == "true";
+  console.log(isLoggedIn);
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
         {/* Public Route - Index route */}
-        <Route index path="" element={<Login />} />
+        <Route index path="" element={isLoggedIn ? <Home /> : <Login />} />
 
         {/* Public route for redirecting while not authenticated */}
-        <Route index path="login" element={<Login />} />
+        <Route index path="login" element={isLoggedIn ? <Home /> : <Login />} />
 
         {/* Private Route  */}
         <Route element={<PrivateRoute />}>
