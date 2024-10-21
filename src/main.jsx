@@ -19,6 +19,7 @@ import { Orders } from "./Components/pages/Orders.jsx";
 import { Login } from "./Components/pages/Login.jsx";
 import { PrivateRoute } from "./Components/Routes/PrivateRoute.jsx";
 import { useSelector } from "react-redux";
+import { Register } from "./Components/pages/Register.jsx";
 
 const App = () => {
   const isLoggedIn = useSelector((state) => state.loginDetails.isLoggedin);
@@ -26,6 +27,9 @@ const App = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
+        {/* Public Route for Login */}
+        <Route path="register" element={<Register />} />
+
         {/* Public Route - Index route */}
         <Route index element={!isLoggedIn ? <Login /> : <Home />} />
 

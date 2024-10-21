@@ -1,52 +1,38 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { adminAuthentication, authenticate } from "../../Redux/slice/login";
-import { toast, ToastContainer } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
-import { generateJWT, verifyJwt } from "../../Utils/jwtAuthentication";
+import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import { registerUser } from "../../Utils/jwtAuthentication";
 
-export const Login = () => {
+export const Register = () => {
   //State
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [phoneNumber, setPhoneNumber] = useState();
   const [showPassword, setShowPassword] = useState(false);
-
-  //Dispatch
-  const dispatch = useDispatch();
-  //Navigate
-  const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = await generateJWT(email, password);
-    if (token != null) {
-      sessionStorage.setItem("loginToken", `${token}`);
-      const verifyUser = await verifyJwt(sessionStorage.getItem("loginToken"));
-      dispatch(authenticate(verifyUser.isVerifiedUser));
-      dispatch(adminAuthentication(verifyUser.isAdmin));
-      if (verifyUser) {
-        setTimeout(() => {
-          navigate("/home");
-        }, 1000);
-      } else {
-        console.log("Error message");
-        toast.error("Login Expired..", {
-          position: "top-right",
-          autoClose: 1000,
-        });
-      }
+    const registerRequest = await registerUser(
+      firstName,
+      lastName,
+      email,
+      password,
+      phoneNumber
+    );
+    if (registerRequest.data) {
+      toast.success("Registered Successfully", {
+        position: "top-right",
+        autoClose: 1000,
+      });
     } else {
-      toast.error("Invalid Credentials", {
+      toast.error(registerRequest.errorMessage || "Invalid Inputs", {
         position: "top-right",
         autoClose: 1000,
       });
     }
   };
-
-  // useEffect(() => {
-  //   s
-  // }, []);
-
   return (
     <>
       <ToastContainer />
@@ -68,18 +54,49 @@ export const Login = () => {
         <div className="flex border mx-20 rounded-xl shadow-xl justify-center self-center z-10">
           <div className="p-12 bg-white mx-auto rounded-3xl w-96">
             <div className="mb-7">
-              <h3 className="font-semibold text-2xl text-gray-800">Sign In</h3>
+              <h3 className="font-semibold text-2xl text-gray-800">Sign Up</h3>
               <p className="text-gray-400">
-                Don't have an account?{" "}
+                Have an account?{" "}
                 <Link
-                  to={"/register"}
+                  to={"/login"}
                   className="text-sm text-blue-600 hover:text-violet-700"
                 >
-                  Sign Up
+                  Sign In
                 </Link>
               </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-80 text-lg px-4 py-3 bg-gray-200 focus:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-80 text-lg px-4 py-3 bg-gray-200 focus:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="tel"
+                  pattern="[0-9]{10}"
+                  placeholder="10-Digit Phone Number"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-80 text-lg px-4 py-3 bg-gray-200 focus:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
+                  required
+                />
+              </div>
               <div>
                 <input
                   type="email"
@@ -130,19 +147,12 @@ export const Login = () => {
                   )}
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="text-sm ml-auto">
-                  <a href="#" className="text-blue-600 hover:text-blue-500">
-                    Forgot your password?
-                  </a>
-                </div>
-              </div>
               <div>
                 <button
                   type="submit"
                   className="w-full flex justify-center bg-blue-800 hover:bg-blue-500 text-gray-100 p-3 rounded-lg tracking-wide font-semibold cursor-pointer transition ease-in duration-500"
                 >
-                  Sign in
+                  Sign up
                 </button>
               </div>
             </form>

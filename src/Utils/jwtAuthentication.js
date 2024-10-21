@@ -43,3 +43,27 @@ export const verifyJwt = async (token) => {
   }
   return verifiedToken;
 };
+
+export const registerUser = async (
+  firstName,
+  lastName,
+  phone,
+  email,
+  password
+) => {
+  try {
+    const respone = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}fake-store/user/register`,
+      {
+        fname: firstName,
+        lname: lastName,
+        email: email,
+        password: password,
+        phone: phone,
+      }
+    );
+    return respone;
+  } catch (error) {
+    return error;
+  }
+};

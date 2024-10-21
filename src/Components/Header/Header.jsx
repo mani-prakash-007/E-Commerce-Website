@@ -58,7 +58,7 @@ export const Header = () => {
             <>
               {" "}
               <Link
-                to={"/login"}
+                to={"/register"}
                 className="px-5 border rounded-lg py-2 hover:bg-gray-200 mx-2 "
               >
                 {" "}
