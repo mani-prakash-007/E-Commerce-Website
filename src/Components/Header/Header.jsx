@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ShoppingCartIcon from "../../assets/shoppingCart.png";
 import { MdLogout, MdShoppingCart } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,7 +9,9 @@ import { authenticate } from "../../Redux/slice/login";
 export const Header = () => {
   //Redux Store
   const cartProducts = useSelector((state) => state.cartProducts);
-  const isLoggedIn = useSelector((state) => state.loginDetails.isLoggedin);
+  const loginDetails = useSelector((state) => state.loginDetails);
+  const isLoggedIn = loginDetails.isLoggedin;
+  const isAdmin = loginDetails.isAdmin;
 
   //Navigate
   const navigate = useNavigate();
@@ -17,10 +19,12 @@ export const Header = () => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    sessionStorage.setItem("isLoggedin", false);
+    sessionStorage.removeItem("loginToken");
     dispatch(authenticate(false));
     navigate("/login");
   };
+
+  useEffect(() => {}, [loginDetails]);
   return (
     <>
       <div className="flex justify-between px-5 items-center h-20 border py-2 ">
@@ -87,12 +91,14 @@ export const Header = () => {
                 {" "}
                 <p className="font-medium text-xl ">Orders</p>
               </Link>
-              <Link
-                to={"/admin"}
-                className="px-5 border rounded-lg py-2 hover:bg-gray-200 mx-2"
-              >
-                <MdAdminPanelSettings className="text-2xl" />
-              </Link>
+              {isAdmin && (
+                <Link
+                  to={"/admin"}
+                  className="px-5 border rounded-lg py-2 hover:bg-gray-200 mx-2"
+                >
+                  <MdAdminPanelSettings className="text-2xl" />
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="px-5 border rounded-lg py-2 hover:bg-gray-200 mx-2"

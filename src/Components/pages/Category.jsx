@@ -42,7 +42,6 @@ export const Category = () => {
 
   //Placed Orders
   const placedOrders = useSelector((state) => state.orders);
-  console.log(placedOrders);
 
   //Side Effects
   useEffect(() => {

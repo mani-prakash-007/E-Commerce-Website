@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authenticate } from "../../Redux/slice/login";
+import { adminAuthentication, authenticate } from "../../Redux/slice/login";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { generateJWT, verifyJwt } from "../../Utils/jwtAuthentication";
 
 export const Login = () => {
   //State
@@ -10,41 +11,41 @@ export const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  //Redux Store
-  const loginDetails = useSelector((state) => state.loginDetails);
-
   //Dispatch
   const dispatch = useDispatch();
   //Navigate
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if ((email == loginDetails.email) & (password == loginDetails.password)) {
-      dispatch(authenticate(true));
-      toast.success("Login Success...", {
-        position: "top-right",
-        autoClose: 1000,
-      });
-
-      setTimeout(() => {
-        navigate("/home");
-      }, 1000);
-
-      setTimeout(() => {
-        dispatch(authenticate(false));
-      }, 60000);
+    const token = await generateJWT(email, password);
+    if (token != null) {
+      sessionStorage.setItem("loginToken", `${token}`);
+      const verifyUser = await verifyJwt(sessionStorage.getItem("loginToken"));
+      dispatch(authenticate(verifyUser.isVerifiedUser));
+      dispatch(adminAuthentication(verifyUser.isAdmin));
+      if (verifyUser) {
+        setTimeout(() => {
+          navigate("/home");
+        }, 1000);
+      } else {
+        console.log("Error message");
+        toast.error("Login Expired..", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
     } else {
-      toast.error("Wrong Credentials...", {
+      toast.error("Invalid Credentials", {
         position: "top-right",
         autoClose: 1000,
       });
     }
   };
 
-  useEffect(() => {
-    sessionStorage.setItem("isLoggedin", "false");
-  }, []);
+  // useEffect(() => {
+  //   s
+  // }, []);
 
   return (
     <>

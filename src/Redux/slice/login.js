@@ -10,9 +10,8 @@ if (sessionStorage.getItem("isLoggedin") === "true") {
 }
 
 const initialState = {
-  email: "manip8072@gmail.com",
-  password: "Mani@2003",
   isLoggedin: initialLoginStatus,
+  isAdmin: false,
 };
 //Slice
 export const loginDetails = createSlice({
@@ -23,9 +22,12 @@ export const loginDetails = createSlice({
       state.isLoggedin = action.payload;
       sessionStorage.setItem("isLoggedin", action.payload);
     },
+    adminAuthentication: (state, action) => {
+      state.isAdmin = action.payload;
+    },
   },
 });
 
-export const { authenticate } = loginDetails.actions;
+export const { authenticate , adminAuthentication } = loginDetails.actions;
 
 export default loginDetails.reducer;

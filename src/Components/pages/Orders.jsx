@@ -6,8 +6,6 @@ export const Orders = () => {
   const orders = useSelector((state) => state.orders);
   const [searchTerm, setSearchTerm] = useState("");
 
-  console.log(orders);
-
   // Total Amount for orders
   const totalAmount = orders.reduce((acc, { product, quantity }) => {
     return product && product.price ? acc + product.price * quantity : acc;

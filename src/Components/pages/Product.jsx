@@ -35,7 +35,6 @@ export const Product = () => {
 
   //Placed Orders
   const placedOrders = useSelector((state) => state.orders);
-  console.log(placedOrders);
 
   //Side Effects
   useEffect(() => {
