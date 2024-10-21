@@ -27,7 +27,10 @@ export const Login = () => {
       if (verifyUser) {
         setTimeout(() => {
           navigate("/home");
-        }, 1000);
+        }, 5000);
+        toast.success("Login Success", {
+          position: "top-right",
+        });
       } else {
         console.log("Error message");
         toast.error("Login Expired..", {
@@ -42,10 +45,6 @@ export const Login = () => {
       });
     }
   };
-
-  // useEffect(() => {
-  //   s
-  // }, []);
 
   return (
     <>

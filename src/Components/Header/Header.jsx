@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { authenticate } from "../../Redux/slice/login";
+import { toast, ToastContainer } from "react-toastify";
 
 export const Header = () => {
   //Redux Store
@@ -19,9 +20,11 @@ export const Header = () => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    sessionStorage.removeItem("loginToken");
-    dispatch(authenticate(false));
-    navigate("/login");
+    setTimeout(() => {
+      sessionStorage.removeItem("loginToken");
+      dispatch(authenticate(false));
+      navigate("/login");
+    }, 1000);
   };
 
   useEffect(() => {}, [loginDetails]);

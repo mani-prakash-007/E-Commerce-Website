@@ -47,9 +47,9 @@ export const verifyJwt = async (token) => {
 export const registerUser = async (
   firstName,
   lastName,
-  phone,
   email,
-  password
+  password,
+  phone
 ) => {
   try {
     const respone = await axios.post(
