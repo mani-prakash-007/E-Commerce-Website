@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { authenticate } from "../../Redux/slice/login";
-import { toast, ToastContainer } from "react-toastify";
 
 export const Header = () => {
   //Redux Store

@@ -20,6 +20,7 @@ import { Login } from "./Components/pages/Login.jsx";
 import { PrivateRoute } from "./Components/Routes/PrivateRoute.jsx";
 import { useSelector } from "react-redux";
 import { Register } from "./Components/pages/Register.jsx";
+import { AddProducts } from "./Components/pages/AddProducts.jsx";
 
 const App = () => {
   const isLoggedIn = useSelector((state) => state.loginDetails.isLoggedin);
@@ -47,6 +48,7 @@ const App = () => {
             <Route path=":categoryName" element={<Category />} />
           </Route>
           <Route path="admin" element={<Admin />} />
+          <Route path="add-product" element={<AddProducts />} />
           <Route path="orders" element={<Orders />} />
         </Route>
 
