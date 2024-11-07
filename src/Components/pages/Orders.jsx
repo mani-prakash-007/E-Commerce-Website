@@ -8,13 +8,16 @@ export const Orders = () => {
 
   // Total Amount for orders
   const totalAmount = orders.reduce((acc, { product, quantity }) => {
-    return product && product.price ? acc + product.price * quantity : acc;
+    return product && product.product_price
+      ? acc + product.product_price * quantity
+      : acc;
   }, 0);
 
   // Filtered orders based on search term
   const filteredOrders = orders.filter(
     ({ product }) =>
-      product && product.title.toLowerCase().includes(searchTerm.toLowerCase())
+      product &&
+      product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -65,13 +68,15 @@ export const Orders = () => {
                   >
                     <div className="w-1/3">
                       <img
-                        src={product.image}
-                        alt={product.title}
+                        src={product.product_image_url}
+                        alt={product.product_name}
                         className="h-52 w-60"
                       />
                     </div>
                     <div className="w-2/3 p-5 flex flex-col justify-evenly">
-                      <h1 className="font-bold text-xl">{product.title}</h1>
+                      <h1 className="font-bold text-xl">
+                        {product.product_name}
+                      </h1>
                       <h2 className="text-lg font-medium text-blue-600">
                         Order ID:{" "}
                         <span className="font-normal mx-4 italic">
@@ -85,7 +90,8 @@ export const Orders = () => {
                       <h2 className="text-lg font-medium">
                         Total Price:{" "}
                         <span className="font-normal mx-4 italic">
-                          ${(quantity * (product.price || 0)).toFixed(2)}
+                          $
+                          {(quantity * (product.product_price || 0)).toFixed(2)}
                         </span>
                       </h2>
                     </div>

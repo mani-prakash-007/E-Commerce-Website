@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { verifyJwt } from "../../Utils/jwtAuthentication";
 import axios from "axios";
 
 export const AddProducts = () => {

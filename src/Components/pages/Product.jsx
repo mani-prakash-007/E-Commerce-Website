@@ -13,6 +13,7 @@ import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 export const Product = () => {
   //Params
   const { productId } = useParams();
+  console.log(productId);
 
   //State
   const [productList, setProductList] = useState();
@@ -47,7 +48,7 @@ export const Product = () => {
   }, [allProducts]);
 
   const product = productList?.filter((product) => {
-    return product.id == productId;
+    return product.product_id == productId;
   });
 
   //Handling Add Cart
@@ -64,7 +65,7 @@ export const Product = () => {
         autoClose: 1000,
       });
     } else {
-      toast.error("Already in Cart", {
+      toast.error("Product Already in Cart", {
         position: "top-right",
         autoClose: 1000,
       });
@@ -129,8 +130,8 @@ export const Product = () => {
                   className=" flex flex-col justify-center items-center h-full w-2/6 m-5"
                 >
                   <img
-                    src={product.image}
-                    alt={product.title}
+                    src={product.product_image_url}
+                    alt={product.product_name}
                     className="h-full w-4/5 p-10 my-5"
                   />
                   <div className="flex justify-center flex-wrap my-5">
@@ -164,7 +165,7 @@ export const Product = () => {
                           </thead>
                           <tbody>
                             <tr>
-                              <td>{product.title}</td>
+                              <td>{product.product_name}</td>
                               <td className="flex items-center justify-center">
                                 {" "}
                                 <button
@@ -183,9 +184,9 @@ export const Product = () => {
                               </td>
                               <td>
                                 $
-                                {(product.price * orderItem.quantity).toFixed(
-                                  2
-                                )}
+                                {(
+                                  product.product_price * orderItem.quantity
+                                ).toFixed(2)}
                               </td>
                             </tr>
                           </tbody>
@@ -210,22 +211,24 @@ export const Product = () => {
                 <div className="h-full w-4/5 m-5 py-5">
                   {/* Heading and Rating  */}
                   <div className="">
-                    <h1 className="font-bold text-2xl py-3">{product.title}</h1>
+                    <h1 className="font-bold text-2xl py-3">
+                      {product.product_name}
+                    </h1>
                     <div className="flex items-center">
                       <p className="font-semibold text-2xl flex items-center px-5 py-1 border-green-600 bg-green-600 mx-3 rounded-md">
                         {" "}
                         <IoIosStar className="mr-3" />
-                        {product.rating.rate}
+                        {product.product_ratings}
                       </p>
                       <p className="font-semibold text-gray-400 text-xl">
-                        {product.rating.count} Reviews & Ratings{" "}
+                        {product.product_reviews} Reviews{" "}
                       </p>
                     </div>
                   </div>
                   {/* Price Details  */}
                   <div className="my-8">
                     <h1 className="font-extrabold text-4xl italic">
-                      $ {product.price}{" "}
+                      $ {product.product_price}{" "}
                     </h1>
                   </div>
                   {/* product details  */}
@@ -233,7 +236,7 @@ export const Product = () => {
                     <h1 className="font-semibold text-xl py-3">
                       Product Details
                     </h1>
-                    <p className="text-lg">{product.description}</p>
+                    <p className="text-lg">{product.product_description}</p>
                   </div>
                 </div>
               </>

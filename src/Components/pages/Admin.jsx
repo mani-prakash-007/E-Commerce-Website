@@ -13,12 +13,18 @@ export const Admin = () => {
             Mani Prakash
           </h1>
         </div>
-        <div className="border border-gray-300 p-3">
+        <div className=" flex justify-center border border-gray-300 p-3">
           <Link
             to={"/add-product"}
             className="border border-blue-500 m-2 p-2 rounded-xl bg-blue-500 font-bold text-white active:scale-95"
           >
             Add Product
+          </Link>
+          <Link
+            to={"/view-order"}
+            className="border border-blue-500 m-2 p-2 rounded-xl bg-blue-500 font-bold text-white active:scale-95"
+          >
+            View Orders
           </Link>
         </div>
       </div>

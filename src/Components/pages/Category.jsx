@@ -14,6 +14,7 @@ import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 export const Category = () => {
   //Params
   const { categoryName } = useParams();
+  console.log(categoryName);
 
   //State
   const [categoryList, setCategoryList] = useState();
@@ -40,9 +41,6 @@ export const Category = () => {
   //Cart Products
   const cartProducts = useSelector((state) => state.cartProducts);
 
-  //Placed Orders
-  const placedOrders = useSelector((state) => state.orders);
-
   //Side Effects
   useEffect(() => {
     dispatch(fetchCategory());
@@ -58,38 +56,11 @@ export const Category = () => {
     setCategoryList(category);
   }, [category]);
 
-  //Catergory Routes
-  const categoryRoutes = (data) => {
-    switch (data) {
-      case "electronics":
-        return "electronics";
-      case "jewelery":
-        return "jewelery";
-      case "men's clothing":
-        return "menClothing";
-      case "women's clothing":
-        return "womenClothing";
-    }
-  };
-
-  //Category Filtering using route
-  const categoryFilter = (category) => {
-    switch (category) {
-      case "electronics":
-        return "electronics";
-      case "jewelery":
-        return "jewelery";
-      case "menClothing":
-        return "men's clothing";
-      case "womenClothing":
-        return "women's clothing";
-    }
-  };
-
   // Filtering the Category Products
   const categoryProducts = productList?.filter(
-    (product) => product.category === categoryFilter(categoryName)
+    (product) => product.product_category === categoryName
   );
+  console.log(categoryProducts);
 
   //Handling Add Cart
   const handleAddCart = (product) => {
@@ -165,18 +136,17 @@ export const Category = () => {
             return (
               <div key={index} className={`py-2 px-4  hover:bg-gray-300`}>
                 <NavLink
-                  to={`/category/${categoryRoutes(category)}`}
+                  to={`/category/${category}`}
                   className={({ isActive }) => {
                     return ` tracking-wider ${isActive && "text-blue-500"}`;
                   }}
                 >
-                  {categoryRoutes(category).toUpperCase()}
+                  {category.toUpperCase()}
                 </NavLink>
               </div>
             );
           })}
       </div>
-      // Inside the return statement of your component
       {categoryProducts &&
         categoryProducts.map((product, index) => {
           return (
@@ -184,24 +154,26 @@ export const Category = () => {
               key={index}
               className="w-3/5 border min-h-60 my-5 flex flex-wrap items-center py-5 px-8"
             >
-              <Link to={`/product/${product.id}`}>
+              <Link to={`/product/${product.product_id}`}>
                 <img
-                  src={product.image}
-                  alt={product.title}
+                  src={product.product_image_url}
+                  alt={product.product_name}
                   className="w-48 h-60 p-2 mx-2"
                 />
               </Link>
               <div className="h-60 w-1/2 p-3 mx-2">
-                <h1 className="font-semibold text-xl">{product.title}</h1>
+                <h1 className="font-semibold text-xl">
+                  {product.product_name}
+                </h1>
                 <p className="my-2 overflow-y-scroll no-scrollbar h-36">
-                  {product.description}
+                  {product.product_description}
                 </p>
               </div>
               <div className="w-1/4 px-7 py-4 h-60 mx-2">
-                <h1 className="font-bold text-4xl">${product.price}</h1>
+                <h1 className="font-bold text-4xl">${product.product_price}</h1>
                 <p className="font-semibold text-lg py-1 my-2">Ratings</p>
                 <div className="flex">
-                  {Array(Math.floor(product.rating.rate))
+                  {Array(Math.floor(product.product_ratings))
                     .fill(0)
                     .map((_, index) => (
                       <IoIosStar
@@ -262,7 +234,8 @@ export const Category = () => {
                             <td>
                               $
                               {(
-                                orderItem.product.price * orderItem.quantity
+                                orderItem.product.product_price *
+                                orderItem.quantity
                               ).toFixed(2)}{" "}
                               {/* Use orderItem.product.price */}
                             </td>

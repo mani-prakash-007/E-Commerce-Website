@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "../../Redux/slice/allProductsSlice";
 import { fetchCategory } from "../../Redux/slice/categorySlice";
 import Electronics from "../../assets/Category/Electronics.jpg";
-import Jewelery from "../../assets/Category/Jewelery.jpg";
+import Jewelary from "../../assets/Category/Jewelery.jpg";
 import MenClothing from "../../assets/Category/Men_Clothing.jpg";
 import WomenClothing from "../../assets/Category/Women_Clothing.jpg";
 import { Link } from "react-router-dom";
@@ -41,6 +41,8 @@ export const Home = () => {
     setCategoryList(category);
   }, [category]);
 
+  console.log("Store Category : ", categoryList);
+  console.log("Store Products : ", productList);
   //Generate Random Number
   const generateRandomNumber = () => {
     const randomNumber = Math.floor(Math.random() * 12);
@@ -52,28 +54,14 @@ export const Home = () => {
   // //Swith Case for Category to Show category image
   const categoryImage = (data) => {
     switch (data) {
-      case "electronics":
+      case "Electronics":
         return Electronics;
-      case "jewelery":
-        return Jewelery;
-      case "men's clothing":
+      case "Jewelary":
+        return Jewelary;
+      case "MenClothing":
         return MenClothing;
-      case "women's clothing":
+      case "WomenClothing":
         return WomenClothing;
-    }
-  };
-
-  //Catergory Routes
-  const categoryRoutes = (data) => {
-    switch (data) {
-      case "electronics":
-        return "electronics";
-      case "jewelery":
-        return "jewelery";
-      case "men's clothing":
-        return "menClothing";
-      case "women's clothing":
-        return "womenClothing";
     }
   };
 
@@ -90,7 +78,7 @@ export const Home = () => {
               return (
                 <Link
                   key={index}
-                  to={`/category/${categoryRoutes(data)}`}
+                  to={`/category/${data}`}
                   className="border min-h-28 w-28 rounded-xl mx-5 my-3"
                 >
                   <img
@@ -120,19 +108,19 @@ export const Home = () => {
               .map((product, index) => {
                 return (
                   <>
-                    <Link key={index} to={`/product/${product.id}`}>
+                    <Link key={index} to={`/product/${product.product_id}`}>
                       <div className="card bg-base-100 w-96 shadow-xl m-5 border">
                         <figure className="my-5">
                           <img
-                            src={product.image}
-                            alt={product.title}
+                            src={product.product_image_url}
+                            alt={product.product_name}
                             className="h-40 w-40"
                           />
                         </figure>
                         <div className="card-body">
                           <div className="flex items-center justify-between ">
                             <h2 className="card-title truncate">
-                              {product.title}
+                              {product.product_name}
                             </h2>
                             <div className="badge badge-secondary mx-5 bg-blue-600 border-blue-600">
                               NEW
@@ -141,10 +129,10 @@ export const Home = () => {
                           <div className="card-actions justify-between items-center">
                             <div className="font-bold text-2xl italic">
                               {" "}
-                              ${product.price}
+                              ${product.product_price}
                             </div>
                             <div className="badge badge-outline mx-2">
-                              {product.category}
+                              {product.product_category}
                             </div>
                           </div>
                         </div>

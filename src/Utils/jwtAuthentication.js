@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const generateJWT = async (userEmail, userPassword) => {
-  let token;
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}fake-store/user/login`,
@@ -10,11 +9,10 @@ export const generateJWT = async (userEmail, userPassword) => {
         password: userPassword,
       }
     );
-    token = response.data.Details.loginToken;
+    return response;
   } catch (error) {
-    token = null;
+    return error;
   }
-  return token;
 };
 
 export const verifyJwt = async (token) => {
@@ -64,6 +62,7 @@ export const registerUser = async (
     );
     return respone;
   } catch (error) {
+    console.log(error);
     return error;
   }
 };

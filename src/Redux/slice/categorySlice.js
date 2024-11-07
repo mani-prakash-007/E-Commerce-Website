@@ -7,15 +7,20 @@ export const fetchCategory = createAsyncThunk(
   async (_, { rejecWithValue }) => {
     try {
       const response = await axios.get(
-        "https://fakestoreapi.com/products/categories"
+        `${import.meta.env.VITE_API_BASE_URL}fake-store/product/categories`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("loginToken")}`,
+          },
+        }
       );
-      return response.data;
+      console.log(response.data.All_Category.details);
+      return response.data.All_Category.details;
     } catch (error) {
       return rejecWithValue(error.message);
     }
   }
 );
-
 
 const initialState = {
   category: [],

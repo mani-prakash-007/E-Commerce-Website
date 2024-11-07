@@ -1,16 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Session storage
-let initialLoginStatus;
-
-if (sessionStorage.getItem("isLoggedin") === "true") {
-  initialLoginStatus = sessionStorage.getItem("isLoggedin");
-} else {
-  initialLoginStatus = sessionStorage.setItem("isLoggedin", "false");
-}
-
 const initialState = {
-  isLoggedin: initialLoginStatus,
+  isLoggedin: false,
   isAdmin: false,
 };
 //Slice
@@ -20,7 +12,6 @@ export const loginDetails = createSlice({
   reducers: {
     authenticate: (state, action) => {
       state.isLoggedin = action.payload;
-      sessionStorage.setItem("isLoggedin", action.payload);
     },
     adminAuthentication: (state, action) => {
       state.isAdmin = action.payload;
@@ -28,6 +19,6 @@ export const loginDetails = createSlice({
   },
 });
 
-export const { authenticate , adminAuthentication } = loginDetails.actions;
+export const { authenticate, adminAuthentication } = loginDetails.actions;
 
 export default loginDetails.reducer;

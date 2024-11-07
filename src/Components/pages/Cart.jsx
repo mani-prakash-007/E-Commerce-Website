@@ -41,7 +41,7 @@ export const Cart = () => {
   };
 
   const totalPrice = cartProducts.reduce(
-    (acc, product, index) => acc + product.price * itemQuantity[index],
+    (acc, product, index) => acc + product.product_price * itemQuantity[index],
     0
   );
 
@@ -95,18 +95,20 @@ export const Cart = () => {
           ) : (
             cartProducts.map((product, index) => (
               <div key={product.id} className="border w-full p-5 flex my-5">
-                <Link to={`/product/${product.id}`}>
+                <Link to={`/product/${product.product_id}`}>
                   <img
-                    src={product.image}
+                    src={product.product_image_url}
                     alt="Product"
                     className="w-60 h-60"
                   />
                 </Link>
                 <div className="w-full mx-5 p-5 flex flex-col justify-between">
                   <div className="w-fit">
-                    <h1 className="font-bold text-2xl">{product.title}</h1>
+                    <h1 className="font-bold text-2xl">
+                      {product.product_name}
+                    </h1>
                     <h2 className="font-bold text-xl my-2 italic">
-                      ${product.price}
+                      ${product.product_price}
                     </h2>
                     <h2 className="font-bold text-xl my-2">
                       Quantity: {itemQuantity[index]}
@@ -134,7 +136,7 @@ export const Cart = () => {
                       </button>
                     </div>
                     <button
-                      onClick={() => handleRemoveCartItem(product.id)}
+                      onClick={() => handleRemoveCartItem(product.product_id)}
                       className="border py-2 px-4 mx-5 rounded-lg text-red-600 hover:bg-red-600 hover:text-white active:scale-95"
                     >
                       <MdDelete className="text-2xl" />
@@ -166,11 +168,13 @@ export const Cart = () => {
                   </tr>
                 ) : (
                   cartProducts.map((product, index) => (
-                    <tr key={product.id}>
-                      <td>{product.title}</td>
+                    <tr key={product.product_id}>
+                      <td>{product.product_name}</td>
                       <td className="pl-10">{itemQuantity[index]}</td>
                       <td>
-                        {(product.price * itemQuantity[index]).toFixed(2)}
+                        {(product.product_price * itemQuantity[index]).toFixed(
+                          2
+                        )}
                       </td>
                     </tr>
                   ))

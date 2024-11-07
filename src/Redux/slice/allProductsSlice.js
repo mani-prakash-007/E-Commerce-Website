@@ -6,8 +6,16 @@ export const fetchAllProducts = createAsyncThunk(
   "allProducts/fetchAllProducts", //Action Type
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://fakestoreapi.com/products");
-      return response.data;
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}fake-store/product/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("loginToken")}`,
+          },
+        }
+      );
+      console.log(response.data.All_Products.details);
+      return response.data.All_Products.details;
     } catch (error) {
       return rejectWithValue(error.message);
     }
