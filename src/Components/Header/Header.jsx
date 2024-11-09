@@ -6,6 +6,7 @@ import { MdAdminPanelSettings } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { authenticate } from "../../Redux/slice/login";
 import { clearCart } from "../../Redux/slice/cart";
+import { clearOrder } from "../../Redux/slice/orders";
 
 export const Header = () => {
   //Redux Store
@@ -26,6 +27,7 @@ export const Header = () => {
   const handleLogout = () => {
     setTimeout(() => {
       dispatch(clearCart());
+      dispatch(clearOrder());
       sessionStorage.removeItem("loginToken");
       dispatch(authenticate(false));
       navigate("/login");

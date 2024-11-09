@@ -30,7 +30,11 @@ const initialState = {
 const placedOrders = createSlice({
   name: "orders",
   initialState,
-  reducers: {},
+  reducers: {
+    clearOrder: (state, action) => {
+      state.allOrders = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllOrders.pending, (state, action) => {
@@ -49,7 +53,7 @@ const placedOrders = createSlice({
 });
 
 //Action
-export const { confirmOrder } = placedOrders.actions;
+export const { clearOrder } = placedOrders.actions;
 
 //Default Reducer
 export default placedOrders.reducer;
