@@ -37,7 +37,3 @@ export const removeProductfromUserCart = async (productId) => {
     return error;
   }
 };
-
-export const addProductToCart = async() => {
-
-}

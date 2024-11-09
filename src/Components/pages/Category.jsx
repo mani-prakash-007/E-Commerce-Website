@@ -8,9 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addProductToCart, fetchAllCartProducts } from "../../Redux/slice/cart";
 import { FaMinus, FaPlus } from "react-icons/fa6";
-import { confirmOrder } from "../../Redux/slice/orders";
-import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 import { updateCartProducts } from "../../Utils/cartUtils";
+import { placeOrder } from "../../Utils/orderUtils";
 
 export const Category = () => {
   //Params
@@ -23,7 +22,6 @@ export const Category = () => {
   const [orderItem, setOrderItem] = useState({
     product: "",
     quantity: 1,
-    orderId: 0,
   });
 
   //Dispatch
@@ -143,20 +141,34 @@ export const Category = () => {
   };
 
   //Function for place Order...
-  const handlePlaceOrder = (product) => {
-    const updatedOrderItem = {
-      ...orderItem,
-      product: product,
-      orderId: generateRandomNumber(),
-    };
-    dispatch(confirmOrder(updatedOrderItem));
-    toast.success("Order Placed Successfull", {
-      position: "top-right",
-      autoClose: 1000,
-    });
-
+  const handlePlaceOrder = async (productId, quantity) => {
     // Close the dialog after placing the order
     document.getElementById("my_modal_4").close();
+    //Toast on Loading
+    const toastId = toast.loading("Placing Order...", {
+      position: "top-right",
+    });
+
+    const placeOrderResponse = await placeOrder(productId, quantity);
+    if (placeOrderResponse.data) {
+      toast.update(toastId, {
+        render: "Order Placed...",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } else {
+      toast.update(toastId, {
+        render: `${
+          placeOrderResponse.response.data.ErrorMessage ||
+          placeOrderResponse.response.data.error ||
+          "Something went wrong"
+        }`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
   };
 
   return (
@@ -237,6 +249,11 @@ export const Category = () => {
                       <h3 className="font-bold text-lg">Order Confirmation</h3>
                       <table className="table">
                         <thead>
+                          {console.log(
+                            typeof orderItem.product._id,
+                            orderItem.product._id
+                          )}
+                          {console.log(orderItem)}
                           <tr className="text-base">
                             <th>Product Name</th>
                             <th className="text-center">Quantity</th>
@@ -245,7 +262,7 @@ export const Category = () => {
                         </thead>
                         <tbody>
                           <tr>
-                            <td>{orderItem.product.title}</td>{" "}
+                            <td>{orderItem.product.product_name}</td>{" "}
                             {/* Use orderItem.product.title */}
                             <td className="flex items-center justify-center">
                               <button
@@ -277,7 +294,12 @@ export const Category = () => {
                         <form method="dialog">
                           <button className="btn">Cancel Order</button>
                           <button
-                            onClick={() => handlePlaceOrder(orderItem.product)} // Pass the selected product
+                            onClick={() =>
+                              handlePlaceOrder(
+                                orderItem.product._id,
+                                orderItem.quantity
+                              )
+                            } // Pass the selected product
                             type="button"
                             className="btn border px-7 py-3 mx-5 w-44 rounded-md bg-orange-600 text-white font-bold active:scale-95"
                           >

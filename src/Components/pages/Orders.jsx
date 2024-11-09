@@ -1,31 +1,42 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { fetchAllOrders } from "../../Redux/slice/orders";
 
 export const Orders = () => {
-  const orders = useSelector((state) => state.orders);
+  //Redux Store
+  const { allOrders, loading, error } = useSelector((state) => state.orders);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Total Amount for orders
-  const totalAmount = orders.reduce((acc, { product, quantity }) => {
+  //Dispatch
+  const dispatch = useDispatch();
+
+  // Total Amount for allOrders
+  const totalAmount = allOrders.reduce((acc, { product, quantity }) => {
     return product && product.product_price
       ? acc + product.product_price * quantity
       : acc;
   }, 0);
 
-  // Filtered orders based on search term
-  const filteredOrders = orders.filter(
+  // Filtered allOrders based on search term
+  const filteredOrders = allOrders.filter(
     ({ product }) =>
       product &&
       product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    dispatch(fetchAllOrders());
+  }, [dispatch]);
+
+  console.log(allOrders);
 
   return (
     <div className="border h-screen my-5 shadow-xl mx-10 flex justify-around p-10">
       <div className="border h-2/3 w-80 mx-3 p-8">
         <h1 className="text-center font-bold text-2xl">All Order Details</h1>
         <p className="my-5 font-medium text-lg">
-          Total Orders: {orders.length}
+          Total Orders: {allOrders.length}
         </p>
         <p className="my-5 font-medium text-lg">
           Total Amount: ${totalAmount.toFixed(2)}

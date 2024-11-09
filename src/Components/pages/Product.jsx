@@ -7,9 +7,8 @@ import { addProductToCart, fetchAllCartProducts } from "../../Redux/slice/cart";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaMinus, FaPlus } from "react-icons/fa6";
-import { confirmOrder } from "../../Redux/slice/orders";
-import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 import { updateCartProducts } from "../../Utils/cartUtils";
+import { placeOrder } from "../../Utils/orderUtils";
 
 export const Product = () => {
   //Params
@@ -18,11 +17,7 @@ export const Product = () => {
 
   //State
   const [productList, setProductList] = useState();
-  const [orderItem, setOrderItem] = useState({
-    product: "",
-    quantity: 1,
-    orderId: 0,
-  });
+  const [quantity, setQuantity] = useState(1);
 
   //Dispatch
   const dispatch = useDispatch();
@@ -51,9 +46,7 @@ export const Product = () => {
   const product = productList?.filter((product) => {
     return product.product_id == productId;
   });
-
-  console.log("All Cart Products : ", allCartProducts);
-  console.log("All Products ( State ) : ", productList);
+  console.log("Prod : ", product);
 
   //Handling Add Cart
   const handleAddCart = async (productId) => {
@@ -102,13 +95,8 @@ export const Product = () => {
 
   //Function for Increment
   const handleDecrement = () => {
-    if (orderItem.quantity > 1) {
-      setOrderItem((previousValue) => {
-        return {
-          ...previousValue,
-          quantity: previousValue.quantity - 1,
-        };
-      });
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
     } else {
       alert("Min Quantity is 1");
     }
@@ -116,33 +104,42 @@ export const Product = () => {
 
   //Function for Increment
   const handleIncrement = () => {
-    if (orderItem.quantity < 5) {
-      setOrderItem((previousValue) => {
-        return {
-          ...previousValue,
-          quantity: previousValue.quantity + 1,
-        };
-      });
+    if (quantity < 5) {
+      setQuantity(quantity + 1);
     } else {
       alert("Max Quantity is 5");
     }
   };
 
   //Function for place Order...
-  const handlePlaceOrder = (product) => {
-    const updatedOrderItem = {
-      ...orderItem,
-      product: product,
-      orderId: generateRandomNumber(),
-    };
-    dispatch(confirmOrder(updatedOrderItem));
-    toast.success("Order Placed Successfull", {
-      position: "top-right",
-      autoClose: 1000,
-    });
-
+  const handlePlaceOrder = async (productId, quantity) => {
     // Close the dialog after placing the order
     document.getElementById("my_modal_4").close();
+    //Toast on Loading
+    const toastId = toast.loading("Placing Order...", {
+      position: "top-right",
+    });
+
+    const placeOrderResponse = await placeOrder(productId, quantity);
+    if (placeOrderResponse.data) {
+      toast.update(toastId, {
+        render: "Order Placed...",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } else {
+      toast.update(toastId, {
+        render: `${
+          placeOrderResponse.response.data.ErrorMessage ||
+          placeOrderResponse.response.data.error ||
+          "Something went wrong"
+        }`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
   };
 
   return (
@@ -202,7 +199,7 @@ export const Product = () => {
                                 >
                                   <FaMinus />
                                 </button>
-                                {orderItem.quantity}{" "}
+                                {quantity}{" "}
                                 <button
                                   onClick={handleIncrement}
                                   className="border p-1 mx-3 rounded-md hover:bg-gray-300 active:scale-90"
@@ -211,10 +208,7 @@ export const Product = () => {
                                 </button>
                               </td>
                               <td>
-                                $
-                                {(
-                                  product.product_price * orderItem.quantity
-                                ).toFixed(2)}
+                                ${(product.product_price * quantity).toFixed(2)}
                               </td>
                             </tr>
                           </tbody>
@@ -224,7 +218,9 @@ export const Product = () => {
                             {/* if there is a button, it will close the modal */}
                             <button className="btn">Cancel Order</button>
                             <button
-                              onClick={() => handlePlaceOrder(product)}
+                              onClick={() =>
+                                handlePlaceOrder(product._id, quantity)
+                              }
                               type="button"
                               className="btn border px-7 py-3 mx-5 w-44 rounded-md  bg-orange-600 text-white font-bold active:scale-95"
                             >
