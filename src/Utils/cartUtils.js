@@ -16,7 +16,6 @@ export const updateCartProducts = async (productId, quantityChange) => {
     );
     return response;
   } catch (error) {
-    console.log("Cart Utils : ", error);
     return error;
   }
 };
@@ -33,7 +32,6 @@ export const removeProductfromUserCart = async (productId) => {
     );
     return response;
   } catch (error) {
-    console.log("Cart Util : ", error);
     return error;
   }
 };

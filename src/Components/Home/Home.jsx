@@ -41,8 +41,6 @@ export const Home = () => {
     setCategoryList(category);
   }, [category]);
 
-  console.log("Store Category : ", categoryList);
-  console.log("Store Products : ", productList);
   //Generate Random Number
   const generateRandomNumber = () => {
     const randomNumber = Math.floor(Math.random() * 12);

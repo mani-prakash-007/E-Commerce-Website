@@ -14,7 +14,6 @@ import { placeOrder } from "../../Utils/orderUtils";
 export const Category = () => {
   //Params
   const { categoryName } = useParams();
-  console.log(categoryName);
 
   //State
   const [categoryList, setCategoryList] = useState();
@@ -65,7 +64,6 @@ export const Category = () => {
   const categoryProducts = productList?.filter(
     (product) => product.product_category === categoryName
   );
-  console.log(categoryProducts);
 
   //Handling Add Cart
   const handleAddCart = async (productId) => {
@@ -249,11 +247,6 @@ export const Category = () => {
                       <h3 className="font-bold text-lg">Order Confirmation</h3>
                       <table className="table">
                         <thead>
-                          {console.log(
-                            typeof orderItem.product._id,
-                            orderItem.product._id
-                          )}
-                          {console.log(orderItem)}
                           <tr className="text-base">
                             <th>Product Name</th>
                             <th className="text-center">Quantity</th>

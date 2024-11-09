@@ -14,7 +14,6 @@ export const fetchCategory = createAsyncThunk(
           },
         }
       );
-      console.log(response.data.All_Category.details);
       return response.data.All_Category.details;
     } catch (error) {
       return rejecWithValue(error.message);

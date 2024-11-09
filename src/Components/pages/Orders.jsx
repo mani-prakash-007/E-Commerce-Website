@@ -20,7 +20,6 @@ export const Orders = () => {
 
   // Total Amount for allOrders
   const totalAmount = orders.reduce((acc, { product, quantity }) => {
-    console.log("Total Amount : ", product, quantity);
     return product && product.product_price
       ? acc + product.product_price * quantity
       : acc;
@@ -32,7 +31,6 @@ export const Orders = () => {
       product &&
       product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log("Filtered Products : ", filteredOrders);
   useEffect(() => {
     dispatch(fetchAllProducts());
     dispatch(fetchAllOrders());
@@ -50,7 +48,6 @@ export const Orders = () => {
     }
   }, [allProducts, allOrders]);
 
-  console.log(orders);
 
   return (
     <div className="border h-screen my-5 shadow-xl mx-10 flex justify-around p-10">

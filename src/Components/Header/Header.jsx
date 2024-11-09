@@ -12,9 +12,6 @@ export const Header = () => {
   const loginDetails = useSelector((state) => state.loginDetails);
   const isLoggedIn = loginDetails.isLoggedin;
   const isAdmin = loginDetails.isAdmin;
-  console.log("isLoggedIn : ", isLoggedIn);
-  console.log("isAdmin : ", isAdmin);
-
   //Navigate
   const navigate = useNavigate();
   //Dispatch

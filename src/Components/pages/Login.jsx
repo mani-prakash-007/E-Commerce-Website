@@ -38,7 +38,6 @@ export const Login = () => {
           navigate("/home");
         }, 3000);
       } else {
-        console.log("Error message");
         toast.error("Login Failed", {
           position: "top-right",
           autoClose: 3000,

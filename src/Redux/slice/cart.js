@@ -18,7 +18,6 @@ export const fetchAllCartProducts = createAsyncThunk(
           },
         }
       );
-      console.log(response.data.cartProducts);
       return response.data.cartProducts;
     } catch (error) {
       return rejectWithValue(error.message);

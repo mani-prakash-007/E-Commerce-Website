@@ -12,16 +12,6 @@ export const AddProducts = () => {
   const [productReview, setProductReview] = useState();
   const [productDescription, setProductDescription] = useState();
 
-  console.log(
-    productCategory,
-    productDescription,
-    productId,
-    productImageUrl,
-    productName,
-    productPrice,
-    productRating,
-    productReview
-  );
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -43,8 +33,6 @@ export const AddProducts = () => {
           },
         }
       );
-
-      console.log(response.data); // Debugging step to check what data is returned
 
       // Trigger success toast only if response data exists or meets your expectations
       if (response.data && response.data.status) {

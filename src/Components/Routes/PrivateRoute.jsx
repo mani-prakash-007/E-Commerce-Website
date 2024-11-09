@@ -20,7 +20,6 @@ export const PrivateRoute = () => {
   const verifyLogin = async (token) => {
     if (token) {
       const isVerified = await verifyJwt(token);
-      console.log(isVerified);
       dispatch(authenticate(isVerified.isVerifiedUser));
       dispatch(adminAuthentication(isVerified.isAdmin));
     }

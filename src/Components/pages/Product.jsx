@@ -13,7 +13,6 @@ import { placeOrder } from "../../Utils/orderUtils";
 export const Product = () => {
   //Params
   const { productId } = useParams();
-  console.log(productId);
 
   //State
   const [productList, setProductList] = useState();
@@ -46,7 +45,6 @@ export const Product = () => {
   const product = productList?.filter((product) => {
     return product.product_id == productId;
   });
-  console.log("Prod : ", product);
 
   //Handling Add Cart
   const handleAddCart = async (productId) => {

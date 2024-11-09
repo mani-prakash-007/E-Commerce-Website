@@ -14,7 +14,6 @@ export const fetchAllProducts = createAsyncThunk(
           },
         }
       );
-      console.log(response.data.All_Products.details);
       return response.data.All_Products.details;
     } catch (error) {
       return rejectWithValue(error.message);

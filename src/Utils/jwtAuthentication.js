@@ -36,7 +36,6 @@ export const verifyJwt = async (token) => {
       verifiedToken.isAdmin = true;
     }
   } catch (error) {
-    console.log(error);
     verifiedToken.isVerifiedUser = false;
   }
   return verifiedToken;
@@ -62,7 +61,6 @@ export const registerUser = async (
     );
     return respone;
   } catch (error) {
-    console.log(error);
     return error;
   }
 };

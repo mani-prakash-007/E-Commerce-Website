@@ -14,7 +14,6 @@ export const fetchAllOrders = createAsyncThunk(
           },
         }
       );
-      console.log(response);
       return response.data.details;
     } catch (error) {
       return rejectWithValue(error.message);

@@ -3,11 +3,9 @@ import { MdShoppingCart, MdDelete } from "react-icons/md";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clearCart, fetchAllCartProducts } from "../../Redux/slice/cart";
-import { confirmOrder } from "../../Redux/slice/orders";
+import { fetchAllCartProducts } from "../../Redux/slice/cart";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 import { fetchAllProducts } from "../../Redux/slice/allProductsSlice";
 import {
   removeProductfromUserCart,
@@ -33,7 +31,6 @@ export const Cart = () => {
       position: "top-right",
     });
     const removeResponse = await removeProductfromUserCart(productId);
-    console.log(removeResponse);
     if (removeResponse.data) {
       const updatedCartItems = cartItems.filter(
         (item) => item.product._id != productId
@@ -61,14 +58,10 @@ export const Cart = () => {
   };
 
   const updateQuantity = async (productId, quantityChange) => {
-    console.log(productId, quantityChange);
-    console.log(sessionStorage.getItem("loginToken"));
     const toastId = toast.loading("Updating quantity...", {
       position: "top-right",
     });
     const updateResponse = await updateCartProducts(productId, quantityChange);
-
-    console.log(updateResponse);
 
     if (updateResponse.data) {
       const updatedCartItems = cartItems.map((item) => {
@@ -124,8 +117,6 @@ export const Cart = () => {
     }
   }, [allProducts, allCartProducts]);
 
-  console.log("Cart Component : ", allCartProducts);
-  console.log("Cart items : ", cartItems);
   return (
     <div className="my-5 flex justify-center">
       <div className="border h-svh flex w-4/5 p-5">
