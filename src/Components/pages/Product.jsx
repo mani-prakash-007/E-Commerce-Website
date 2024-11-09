@@ -3,12 +3,13 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "../../Redux/slice/allProductsSlice";
 import { IoIosStar } from "react-icons/io";
-import { addProductToCart } from "../../Redux/slice/cart";
+import { addProductToCart, fetchAllCartProducts } from "../../Redux/slice/cart";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 import { confirmOrder } from "../../Redux/slice/orders";
 import { generateRandomNumber } from "../../Utils/generateRandomNumber";
+import { updateCartProducts } from "../../Utils/cartUtils";
 
 export const Product = () => {
   //Params
@@ -32,14 +33,14 @@ export const Product = () => {
   );
 
   //Cart Products
-  const cartProducts = useSelector((state) => state.cartProducts);
-
-  //Placed Orders
-  const placedOrders = useSelector((state) => state.orders);
+  const { allCartProducts, loading, Error } = useSelector(
+    (state) => state.cartProducts
+  );
 
   //Side Effects
   useEffect(() => {
     dispatch(fetchAllProducts());
+    dispatch(fetchAllCartProducts());
   }, [dispatch]);
 
   //Side Effect when prod , category changes
@@ -51,23 +52,50 @@ export const Product = () => {
     return product.product_id == productId;
   });
 
-  //Handling Add Cart
-  const handleAddCart = (product) => {
-    //Checking product is Exist in the cart array
-    const isProductExist = cartProducts.some(
-      (cartItem) => cartItem.id == product.id
-    );
+  console.log("All Cart Products : ", allCartProducts);
+  console.log("All Products ( State ) : ", productList);
 
-    if (!isProductExist) {
-      dispatch(addProductToCart(product));
-      toast.success("Product Added Successfully", {
-        position: "top-right",
-        autoClose: 1000,
+  //Handling Add Cart
+  const handleAddCart = async (productId) => {
+    //Toast on Loading
+    const toastId = toast.loading("Adding Product to Cart...", {
+      position: "top-right",
+    });
+    //Checking product is Exist in the cart array
+    const isProductExist = allCartProducts.some(
+      (cartItem) => cartItem.productId == productId
+    );
+    if (isProductExist) {
+      toast.update(toastId, {
+        render: "Product already in cart..!",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+      return;
+    }
+    //API Call to Add product to cart
+    const addProductToCartResponse = await updateCartProducts(productId, 1);
+    if (addProductToCartResponse.data) {
+      dispatch(
+        addProductToCart(addProductToCartResponse.data.Details.products)
+      );
+      toast.update(toastId, {
+        render: "Product added to cart...",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
       });
     } else {
-      toast.error("Product Already in Cart", {
-        position: "top-right",
-        autoClose: 1000,
+      toast.update(toastId, {
+        render: `${
+          addProductToCartResponse.response.data.ErrorMessage ||
+          addProductToCartResponse.response.data.error ||
+          "Something went wrong"
+        }`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
       });
     }
   };
@@ -136,7 +164,7 @@ export const Product = () => {
                   />
                   <div className="flex justify-center flex-wrap my-5">
                     <button
-                      onClick={() => handleAddCart(product)}
+                      onClick={() => handleAddCart(product._id)}
                       className="border px-7 py-3 mx-5 w-44 rounded-md bg-orange-400 text-white font-bold active:scale-95"
                     >
                       ADD TO CART

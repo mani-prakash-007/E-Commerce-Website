@@ -1,32 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ShoppingCartIcon from "../../assets/shoppingCart.png";
 import { MdLogout, MdShoppingCart } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { authenticate } from "../../Redux/slice/login";
+import { clearCart } from "../../Redux/slice/cart";
 
 export const Header = () => {
   //Redux Store
-  const cartProducts = useSelector((state) => state.cartProducts);
   const loginDetails = useSelector((state) => state.loginDetails);
   const isLoggedIn = loginDetails.isLoggedin;
   const isAdmin = loginDetails.isAdmin;
+  console.log("isLoggedIn : ", isLoggedIn);
+  console.log("isAdmin : ", isAdmin);
 
   //Navigate
   const navigate = useNavigate();
   //Dispatch
   const dispatch = useDispatch();
 
+  //ReduxStore
+  //Cart Products
+  const { allCartProducts, Loading, Error } = useSelector(
+    (state) => state.cartProducts
+  );
+
   const handleLogout = () => {
     setTimeout(() => {
+      dispatch(clearCart());
       sessionStorage.removeItem("loginToken");
       dispatch(authenticate(false));
       navigate("/login");
     }, 1000);
   };
-
-  useEffect(() => {}, [loginDetails]);
   return (
     <>
       <div className="flex justify-between px-5 items-center h-20 border py-2 ">
@@ -82,9 +89,6 @@ export const Header = () => {
               >
                 {" "}
                 <MdShoppingCart className="text-2xl" />
-                <p className="font-bold text-lg mx-2 text-green-500">
-                  {cartProducts.length}
-                </p>
               </Link>
               <Link
                 to={"/orders"}

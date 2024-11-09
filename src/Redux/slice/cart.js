@@ -1,7 +1,37 @@
 // cartSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  isRejectedWithValue,
+} from "@reduxjs/toolkit";
+import axios from "axios";
 
-const initialState = [];
+//Fetch Cart Items
+export const fetchAllCartProducts = createAsyncThunk(
+  "cartProducts/fetchAllCartProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}fake-store/cart/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("loginToken")}`,
+          },
+        }
+      );
+      console.log(response.data.cartProducts);
+      return response.data.cartProducts;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+const initialState = {
+  allCartProducts: [],
+  loading: false,
+  error: "",
+};
 
 //Slice
 export const cartProducts = createSlice({
@@ -9,14 +39,31 @@ export const cartProducts = createSlice({
   initialState,
   reducers: {
     addProductToCart: (state, action) => {
-      state.push(action.payload);
+      state.allCartProducts = action.payload;
     },
     removeProductFromCart: (state, action) => {
-      return state.filter((product) => product.id !== action.payload);
+      return state.allCartProducts.filter(
+        (product) => product.product_id !== action.payload
+      );
     },
-    clearCart: () => {
-      return []; // Clears the cart
+    clearCart: (state, action) => {
+      state.allCartProducts = []; // Clears the cart
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAllCartProducts.pending, (state, action) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(fetchAllCartProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allCartProducts = action.payload;
+      })
+      .addCase(fetchAllCartProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { verifyJwt } from "../../Utils/jwtAuthentication";
 import { useDispatch } from "react-redux";
-import { authenticate } from "../../Redux/slice/login";
+import { adminAuthentication, authenticate } from "../../Redux/slice/login";
 import { useSelector } from "react-redux";
 
 export const PrivateRoute = () => {
@@ -20,7 +20,9 @@ export const PrivateRoute = () => {
   const verifyLogin = async (token) => {
     if (token) {
       const isVerified = await verifyJwt(token);
+      console.log(isVerified);
       dispatch(authenticate(isVerified.isVerifiedUser));
+      dispatch(adminAuthentication(isVerified.isAdmin));
     }
   };
 

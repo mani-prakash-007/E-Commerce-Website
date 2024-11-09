@@ -1,58 +1,124 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdShoppingCart, MdDelete } from "react-icons/md";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { removeProductFromCart, clearCart } from "../../Redux/slice/cart";
+import {
+  removeProductFromCart,
+  clearCart,
+  fetchAllCartProducts,
+} from "../../Redux/slice/cart";
 import { confirmOrder } from "../../Redux/slice/orders";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generateRandomNumber } from "../../Utils/generateRandomNumber";
+import { fetchAllProducts } from "../../Redux/slice/allProductsSlice";
+import axios from "axios";
+import {
+  removeProductfromUserCart,
+  updateCartProducts,
+} from "../../Utils/cartUtils";
 
 export const Cart = () => {
-  const cartProducts = useSelector((state) => state.cartProducts);
+  //State
+  const [cartItems, setCartItems] = useState([]);
+
+  //Redux Store
+  const { allCartProducts, loading, error } = useSelector(
+    (state) => state.cartProducts
+  );
+  const { allProducts, isLoading, errors } = useSelector(
+    (state) => state.allProducts
+  );
+
   const dispatch = useDispatch();
 
-  const [itemQuantity, setItemQuantity] = useState(cartProducts.map(() => 1));
-
-  const handleRemoveCartItem = (productId) => {
-    dispatch(removeProductFromCart(productId));
-    toast.success("Product Removed Successfully", {
+  const handleRemoveCartItem = async (productId) => {
+    const toastId = toast.loading("Removing Product", {
       position: "top-right",
-      autoClose: 1000,
     });
+    const removeResponse = await removeProductfromUserCart(productId);
+    console.log(removeResponse);
+    if (removeResponse.data) {
+      const updatedCartItems = cartItems.filter(
+        (item) => item.product._id != productId
+      );
+      setCartItems(updatedCartItems);
+      // Update the loading toast to success
+      toast.update(toastId, {
+        render: "Product removed successfully",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } else {
+      // Update the loading toast to error
+      toast.update(toastId, {
+        render: `${
+          removeResponse.response.data.ErrorMessage ||
+          removeResponse.response.data.error
+        }`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
   };
 
-  const updateQuantity = (index, change) => {
-    setItemQuantity((prevQuantity) => {
-      const newQuantity = [...prevQuantity];
-      if (change === 1 && newQuantity[index] < 5) {
-        newQuantity[index]++;
-      } else if (change === -1 && newQuantity[index] > 1) {
-        newQuantity[index]--;
-      } else {
-        toast.error(change === 1 ? "Max Quantity is 5" : "Min Quantity is 1", {
-          position: "top-right",
-          autoClose: 1000,
-        });
-      }
-      return newQuantity;
+  const updateQuantity = async (productId, quantityChange) => {
+    console.log(productId, quantityChange);
+    console.log(sessionStorage.getItem("loginToken"));
+    const toastId = toast.loading("Updating quantity...", {
+      position: "top-right",
     });
+    const updateResponse = await updateCartProducts(productId, quantityChange);
+
+    console.log(updateResponse);
+
+    if (updateResponse.data) {
+      const updatedCartItems = cartItems.map((item) => {
+        if (item.product._id === productId) {
+          return { ...item, quantity: item.quantity + quantityChange };
+        }
+        return item;
+      });
+      setCartItems(updatedCartItems);
+      // Update the loading toast to success
+      toast.update(toastId, {
+        render: "Quantity updated successfully",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } else {
+      // Update the loading toast to error
+      toast.update(toastId, {
+        render: `${
+          updateResponse.response.data.ErrorMessage ||
+          updateResponse.response.data.error ||
+          "Something went wrong"
+        }`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
   };
 
-  const totalPrice = cartProducts.reduce(
-    (acc, product, index) => acc + product.product_price * itemQuantity[index],
+  const totalPrice = cartItems.reduce(
+    (acc, product, index) =>
+      acc + product.product.product_price * product.quantity,
     0
   );
 
   const handlePlaceOrder = () => {
-    if (cartProducts.length === 0) {
+    if (allCartProducts.length === 0) {
       alert("Your cart is empty!");
       return;
     }
 
     // Loop through each product and create a separate order
-    cartProducts.forEach((product, index) => {
+    allCartProducts.forEach((product, index) => {
       const orderId = generateRandomNumber(); // Generate a random order ID
       const orderDetails = {
         product: product,
@@ -71,13 +137,37 @@ export const Cart = () => {
     });
   };
 
+  useEffect(() => {
+    dispatch(fetchAllCartProducts());
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
+  useEffect(() => {
+    if (allCartProducts.length > 0 && allProducts.length > 0) {
+      const updatedCartItems = allCartProducts.map((cartItem) => {
+        const product = allProducts.find(
+          (product) => product._id === cartItem.productId
+        );
+        return { ...cartItem, product };
+      });
+      setCartItems(updatedCartItems);
+    }
+  }, [allProducts, allCartProducts]);
+
+  console.log("Cart Component : ", allCartProducts);
+  console.log("Cart items : ", cartItems);
   return (
     <div className="my-5 flex justify-center">
       <div className="border h-svh flex w-4/5 p-5">
         <div className="w-2/3 h-6/5 border mx-4 rounded-lg p-8 overflow-y-scroll no-scrollbar">
           <div className="flex justify-between items-center">
             <h1 className="px-5 font-bold text-3xl flex items-center">
-              Your Cart <MdShoppingCart className="mx-5" />
+              Your Cart
+              <div className="flex flex-row border border-gray items-center mx-4 rounded-xl">
+                <MdShoppingCart className="mx-2 my-1" />{" "}
+                <span className="text-green-600 mx-2 my-1">
+                  {cartItems.length}
+                </span>
+              </div>
             </h1>
             <button
               onClick={handlePlaceOrder}
@@ -86,18 +176,18 @@ export const Cart = () => {
               Place Order
             </button>
           </div>
-          {cartProducts.length === 0 ? (
+          {cartItems.length === 0 ? (
             <div className="w-full p-5 flex my-5 justify-center">
               <h1 className="font-bold text-2xl text-center">
                 Your cart is Empty..!!
               </h1>
             </div>
           ) : (
-            cartProducts.map((product, index) => (
-              <div key={product.id} className="border w-full p-5 flex my-5">
-                <Link to={`/product/${product.product_id}`}>
+            cartItems.map((product, index) => (
+              <div key={index} className="border w-full p-5 flex my-5">
+                <Link to={`/product/${product.product.product_id}`}>
                   <img
-                    src={product.product_image_url}
+                    src={product.product.product_image_url}
                     alt="Product"
                     className="w-60 h-60"
                   />
@@ -105,38 +195,38 @@ export const Cart = () => {
                 <div className="w-full mx-5 p-5 flex flex-col justify-between">
                   <div className="w-fit">
                     <h1 className="font-bold text-2xl">
-                      {product.product_name}
+                      {product.product.product_name}
                     </h1>
                     <h2 className="font-bold text-xl my-2 italic">
-                      ${product.product_price}
+                      ${product.product.product_price}
                     </h2>
                     <h2 className="font-bold text-xl my-2">
-                      Quantity: {itemQuantity[index]}
+                      Quantity: {product.quantity}
                     </h2>
                   </div>
                   <div className="my-2 flex flex-wrap justify-between">
                     <div className="flex items-center mx-3">
                       <button
-                        onClick={() => updateQuantity(index, -1)}
+                        onClick={() => updateQuantity(product.product._id, -1)}
                         className="border p-3 rounded-lg hover:bg-gray-300 active:scale-95 mx-3"
                       >
                         <FaMinus />
                       </button>
                       <input
                         type="number"
-                        value={itemQuantity[index]}
+                        value={product.quantity}
                         className="border rounded-md py-2 focus:outline-none no-spinner w-16 text-center"
                         disabled
                       />
                       <button
-                        onClick={() => updateQuantity(index, 1)}
+                        onClick={() => updateQuantity(product.product._id, 1)}
                         className="border p-3 rounded-lg hover:bg-gray-300 active:scale-95 mx-3"
                       >
                         <FaPlus />
                       </button>
                     </div>
                     <button
-                      onClick={() => handleRemoveCartItem(product.product_id)}
+                      onClick={() => handleRemoveCartItem(product.product._id)}
                       className="border py-2 px-4 mx-5 rounded-lg text-red-600 hover:bg-red-600 hover:text-white active:scale-95"
                     >
                       <MdDelete className="text-2xl" />
@@ -160,21 +250,21 @@ export const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {cartProducts.length === 0 ? (
+                {cartItems.length === 0 ? (
                   <tr>
                     <td colSpan="3" className="text-center">
                       No Items in Cart
                     </td>
                   </tr>
                 ) : (
-                  cartProducts.map((product, index) => (
-                    <tr key={product.product_id}>
-                      <td>{product.product_name}</td>
-                      <td className="pl-10">{itemQuantity[index]}</td>
+                  cartItems.map((product, index) => (
+                    <tr key={product.product.product_id}>
+                      <td>{product.product.product_name}</td>
+                      <td className="pl-10">{product.quantity}</td>
                       <td>
-                        {(product.product_price * itemQuantity[index]).toFixed(
-                          2
-                        )}
+                        {(
+                          product.product.product_price * product.quantity
+                        ).toFixed(2)}
                       </td>
                     </tr>
                   ))
