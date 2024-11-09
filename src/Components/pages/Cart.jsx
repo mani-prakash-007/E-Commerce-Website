@@ -3,17 +3,12 @@ import { MdShoppingCart, MdDelete } from "react-icons/md";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  removeProductFromCart,
-  clearCart,
-  fetchAllCartProducts,
-} from "../../Redux/slice/cart";
+import { clearCart, fetchAllCartProducts } from "../../Redux/slice/cart";
 import { confirmOrder } from "../../Redux/slice/orders";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 import { fetchAllProducts } from "../../Redux/slice/allProductsSlice";
-import axios from "axios";
 import {
   removeProductfromUserCart,
   updateCartProducts,
@@ -111,31 +106,7 @@ export const Cart = () => {
     0
   );
 
-  const handlePlaceOrder = () => {
-    if (allCartProducts.length === 0) {
-      alert("Your cart is empty!");
-      return;
-    }
-
-    // Loop through each product and create a separate order
-    allCartProducts.forEach((product, index) => {
-      const orderId = generateRandomNumber(); // Generate a random order ID
-      const orderDetails = {
-        product: product,
-        quantity: itemQuantity[index],
-        orderId: orderId,
-      };
-
-      // Dispatch the order details to Redux store
-      dispatch(confirmOrder(orderDetails));
-    });
-
-    dispatch(clearCart()); // Clear the cart
-    toast.success("Orders Placed Successfully", {
-      position: "top-right",
-      autoClose: 1000,
-    });
-  };
+  const handlePlaceOrder = () => {};
 
   useEffect(() => {
     dispatch(fetchAllCartProducts());

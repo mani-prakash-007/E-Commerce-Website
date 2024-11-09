@@ -2,41 +2,62 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchAllOrders } from "../../Redux/slice/orders";
+import { fetchAllProducts } from "../../Redux/slice/allProductsSlice";
 
 export const Orders = () => {
   //Redux Store
   const { allOrders, loading, error } = useSelector((state) => state.orders);
+  const { allProducts, Loading, errors } = useSelector(
+    (state) => state.allProducts
+  );
+
+  //State
+  const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   //Dispatch
   const dispatch = useDispatch();
 
   // Total Amount for allOrders
-  const totalAmount = allOrders.reduce((acc, { product, quantity }) => {
+  const totalAmount = orders.reduce((acc, { product, quantity }) => {
+    console.log("Total Amount : ", product, quantity);
     return product && product.product_price
       ? acc + product.product_price * quantity
       : acc;
   }, 0);
 
   // Filtered allOrders based on search term
-  const filteredOrders = allOrders.filter(
+  const filteredOrders = orders.filter(
     ({ product }) =>
       product &&
       product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  console.log("Filtered Products : ", filteredOrders);
   useEffect(() => {
+    dispatch(fetchAllProducts());
     dispatch(fetchAllOrders());
   }, [dispatch]);
 
-  console.log(allOrders);
+  useEffect(() => {
+    if (allProducts.length > 0 && allOrders.length > 0) {
+      const updatedOrderItems = allOrders.map((orderItem) => {
+        const product = allProducts.find(
+          (product) => product._id === orderItem.productId
+        );
+        return { ...orderItem, product };
+      });
+      setOrders(updatedOrderItems);
+    }
+  }, [allProducts, allOrders]);
+
+  console.log(orders);
 
   return (
     <div className="border h-screen my-5 shadow-xl mx-10 flex justify-around p-10">
       <div className="border h-2/3 w-80 mx-3 p-8">
         <h1 className="text-center font-bold text-2xl">All Order Details</h1>
         <p className="my-5 font-medium text-lg">
-          Total Orders: {allOrders.length}
+          Total Orders: {orders.length}
         </p>
         <p className="my-5 font-medium text-lg">
           Total Amount: ${totalAmount.toFixed(2)}
@@ -71,10 +92,10 @@ export const Orders = () => {
             </div>
           ) : (
             filteredOrders.map(
-              ({ product, quantity, orderId }) =>
+              ({ product, quantity, _id }, index) =>
                 product && (
                   <div
-                    key={orderId}
+                    key={index}
                     className="border h-64 my-5 rounded-xl p-5 flex"
                   >
                     <div className="w-1/3">
@@ -90,9 +111,7 @@ export const Orders = () => {
                       </h1>
                       <h2 className="text-lg font-medium text-blue-600">
                         Order ID:{" "}
-                        <span className="font-normal mx-4 italic">
-                          {orderId}
-                        </span>
+                        <span className="font-normal mx-4 italic">{_id}</span>
                       </h2>
                       <h2 className="text-lg font-medium">
                         Ordered Quantity:{" "}
