@@ -1,8 +1,5 @@
 // cartSlice.js
-import {
-  createAsyncThunk,
-  createSlice,
-} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 //Fetch Cart Items
@@ -40,7 +37,7 @@ export const cartProducts = createSlice({
       state.allCartProducts = action.payload;
     },
     removeProductFromCart: (state, action) => {
-      return state.allCartProducts.filter(
+      state.allCartProducts = state.allCartProducts.filter(
         (product) => product.product_id !== action.payload
       );
     },

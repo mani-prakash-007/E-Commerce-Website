@@ -3,7 +3,11 @@ import { MdShoppingCart, MdDelete } from "react-icons/md";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllCartProducts } from "../../Redux/slice/cart";
+import {
+  clearCart,
+  fetchAllCartProducts,
+  removeProductFromCart,
+} from "../../Redux/slice/cart";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchAllProducts } from "../../Redux/slice/allProductsSlice";
@@ -11,6 +15,7 @@ import {
   removeProductfromUserCart,
   updateCartProducts,
 } from "../../Utils/cartUtils";
+import { placeOrder } from "../../Utils/orderUtils";
 
 export const Cart = () => {
   //State
@@ -98,8 +103,62 @@ export const Cart = () => {
       acc + product.product.product_price * product.quantity,
     0
   );
+  console.log("All Cart Prods : ", allCartProducts);
+  console.log("All Cart Prods (State) : ", cartItems);
 
-  const handlePlaceOrder = () => {};
+  //Place order from cart
+  const handlePlaceOrder = async (products) => {
+    console.log("Products Ip : ", products);
+    if (products.length == 0) {
+      toast.error("Your Cart is Empty", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+    //Loading Screen
+    const toastId = toast.loading("Placing orders...", {
+      position: "top-right",
+    });
+    const orderedProductsId = [];
+    //Place Order
+    for (const product of products) {
+      const orderResponse = await placeOrder(
+        product.productId,
+        product.quantity
+      );
+      if (orderResponse.data) {
+        console.log(orderResponse.data);
+        orderedProductsId.push(orderResponse.data.orderDetails.productId);
+      }
+    }
+    if (products.length == orderedProductsId.length) {
+      toast.update(toastId, {
+        render: "Order placed for all cart products",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } else {
+      toast.update(toastId, {
+        render: `Order Placed for ${orderedProductsId.length} products`,
+        type: "warning",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+    console.log("Order Products IDs : ", orderedProductsId);
+    // Remove ordered products from cart
+    for (const productId of orderedProductsId) {
+      const removeResponse = await removeProductfromUserCart(productId);
+      if (removeResponse.data) {
+        setCartItems((prevCartItems) =>
+          prevCartItems.filter((item) => item.productId !== productId)
+        );
+      }
+    }
+    dispatch(clearCart());
+  };
 
   useEffect(() => {
     dispatch(fetchAllCartProducts());
@@ -132,7 +191,7 @@ export const Cart = () => {
               </div>
             </h1>
             <button
-              onClick={handlePlaceOrder}
+              onClick={() => handlePlaceOrder(cartItems)}
               className="border w-60 py-4 sticky rounded-lg text-lg font-medium bg-orange-600 text-white hover:bg-orange-700 active:scale-95"
             >
               Place Order
