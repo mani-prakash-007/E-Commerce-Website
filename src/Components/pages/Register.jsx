@@ -66,14 +66,21 @@ export const Register = () => {
       });
       // setLoading(false);
     }
-    setLoading(false)
+    setLoading(false);
   };
   return (
     <>
       <ToastContainer />
       <div className="relative pt-32 my-5 border mx-10 pb-64 flex sm:flex-row justify-center bg-transparent rounded-3xl shadow-xl">
         {loading ? (
-          <ClipLoader />
+          <div className="flex flex-col items-center justify-center">
+            <ClipLoader className="border border-blue-100" />
+            <p className="mt-5 font-bold">
+              Backend is deployed for free. So, First API call will take upto 2
+              Mins for Response.
+            </p>
+            <p>Please wait...</p>
+          </div>
         ) : (
           <>
             <div className="flex-col flex self-center lg:px-14 sm:max-w-4xl xl:max-w-md z-10">
